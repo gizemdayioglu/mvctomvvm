@@ -9,32 +9,32 @@
 import UIKit
 
 class MusicController: UITableViewController {
-
+    
     var artistViewModels = [ArtistViewModel]()
     override func viewDidLoad() {
         super.viewDidLoad()
         createNavBar()
         createTableView()
         fetchData()
-
+        
     }
-
+    
     fileprivate func fetchData() {
         Service.shared.fetchMusicDatas { (artists, err) in
             if let err = err {
                 print("Failed to fetch music datas:", err)
                 return
             }
-
+            
             self.artistViewModels = artists?.map({return ArtistViewModel(artist: $0)}) ?? []
             self.tableView.reloadData()
         }
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return artistViewModels.count
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // swiftlint:disable force_cast
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellId, for: indexPath) as! ArtistCell
@@ -42,7 +42,7 @@ class MusicController: UITableViewController {
         cell.artistViewModel = artistViewModel
         return cell
     }
-
+    
     fileprivate func createTableView() {
         tableView.register(ArtistCell.self, forCellReuseIdentifier: Constants.cellId)
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
@@ -52,7 +52,7 @@ class MusicController: UITableViewController {
         tableView.estimatedRowHeight = 50
         tableView.tableFooterView = UIView()
     }
-
+    
     fileprivate func createNavBar() {
         navigationItem.title = Constants.headerString
         navigationController?.navigationBar.prefersLargeTitles = true
