@@ -9,40 +9,25 @@
 import UIKit
 
 class MusicController: UITableViewController {
-    
-    var artistViewModels = [ArtistViewModel]()
+
+    var artistViewModels = ArtistViewModel.init()
+    var dataUpdated: (() -> Void)?
     override func viewDidLoad() {
         super.viewDidLoad()
         createNavBar()
         createTableView()
-        fetchData()
-        
+        viewModelClosures()
     }
-    
-    fileprivate func fetchData() {
-        Service.shared.fetchMusicDatas { (artists, err) in
-            if let err = err {
-                print("Failed to fetch music datas:", err)
-                return
-            }
-            
-            self.artistViewModels = artists?.map({return ArtistViewModel(artist: $0)}) ?? []
-            self.tableView.reloadData()
-        }
-    }
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        return artistViewModels.count
+        return artistViewModels.artistData.count
     }
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // swiftlint:disable force_cast
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellId, for: indexPath) as! ArtistCell
-        let artistViewModel = artistViewModels[indexPath.row]
+        let artistViewModel = artistViewModels.artistData[indexPath.row]
         cell.artistViewModel = artistViewModel
         return cell
     }
-    
     fileprivate func createTableView() {
         tableView.register(ArtistCell.self, forCellReuseIdentifier: Constants.cellId)
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
@@ -52,7 +37,6 @@ class MusicController: UITableViewController {
         tableView.estimatedRowHeight = 50
         tableView.tableFooterView = UIView()
     }
-    
     fileprivate func createNavBar() {
         navigationItem.title = Constants.headerString
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -66,5 +50,20 @@ class MusicController: UITableViewController {
 class CustomNavigationController: UINavigationController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+}
+
+extension MusicController {
+
+    fileprivate func viewModelClosures() {
+        artistViewModels.dataUpdated = { [weak self] in
+            print("data source updated")
+            self?.tableView.reloadData()
+        }
+
+        artistViewModels.getData {
+            print("search completed.")
+        }
+        tableView.reloadData()
     }
 }

@@ -13,12 +13,10 @@ public enum Result<T> {
 }
 class Service: NSObject {
     static let shared = Service()
-    
     private static func getData(url: URL,
                                 completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
         URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
     }
-    
     func fetchMusicDatas(completion: @escaping ([Artist]?, Error?) -> ()) {
         let urlString = Constants.urlString
         guard let url = URL(string: urlString) else { return }
@@ -39,20 +37,16 @@ class Service: NSObject {
             }
         }.resume()
     }
-    
     public static func downloadImage(url: URL,
                                      completion: @escaping (Result<Data>) -> Void) {
         Service.getData(url: url) { data, response, error in
-            
             if let error = error {
                 completion(.failure(error))
                 return
             }
-            
             guard let data = data, error == nil else {
                 return
             }
-            
             DispatchQueue.main.async() {
                 completion(.success(data))
             }

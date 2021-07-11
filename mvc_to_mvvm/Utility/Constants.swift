@@ -10,7 +10,7 @@ import UIKit
 
 class Constants: NSObject {
 
-    static let urlString = "https://itunes.apple.com/search?media=music&term=pop"
+    static let urlString = "https://itunes.apple.com/search?media=music&term=metal"
     static let headerString = "Music"
     static let cellId = "cellId"
 }

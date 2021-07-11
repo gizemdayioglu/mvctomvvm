@@ -8,6 +8,7 @@
 import UIKit
 
 class ArtistCell: UITableViewCell {
+    var dataUpdated: (() -> Void)?
     var artistViewModel: ArtistViewModel! {
         didSet {
             textLabel?.text = artistViewModel.name
